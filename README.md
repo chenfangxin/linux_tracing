@@ -1,6 +1,8 @@
 # 使用eBPF
 
++ [cbpf介绍](cbpf.md)
 + [ebpf介绍](ebpf.md)
+
 --------------------------------
 eBPF的应用场景：
 + [tracepoints](tracepoints.md)
