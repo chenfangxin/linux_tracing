@@ -1,7 +1,6 @@
 # 使用eBPF
 
-+ [cbpf介绍](cbpf.md)
-+ [ebpf介绍](ebpf.md)
++ [bpf介绍](bpf.md)
 
 --------------------------------
 eBPF的应用场景：

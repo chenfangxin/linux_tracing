@@ -1,19 +1,11 @@
-# cBPF
+# BPF简介
+  最初设计的BPF(Berkeley Packet Filtering)，是用来捕获和过滤网络报文的，参考[The BSD Packet Filter](bpf-usenix93.pdf)。
 
-cBPF就是传统的BPF(Berkeley Packet Filtering)，是用来捕获和过滤网络报文的，见[The BSD Packet Filter](bpf-usenix93.pdf)。
-
-Linux内核中，BPF的发展历程：
-  * 从Linux-2.5开始支持BPF
-  * 在2011年，Linux内核实现BPF JIT(By Eric Dumazet)
-  * 在2014年，Linux内核重新实现了BPF JIT，称为eBPF(By Alexei Starovoitov)
-
-## cBPF简介
-
-tcpdump的`-d`选项，可以将包过滤条件，翻译为cBPF汇编指令。例如下面的指令，捕获所有目的端口为80的tcp包：
+## 用BPF来抓包
+  BPF允许用户空间程序在socket上绑定过滤程序(filter)。例如命令`tcpdump -i em1 tcp dst port 80`，就是要捕获接口em1上，所有目的端口为80的tcp报文：
 
 ```
-tcpdump -d "tcp dst port 80"
-
+tcpdump -i em1 tcp dst port 80 -d"
   (000) ldh      [12]
   (001) jeq      #0x86dd          jt 2	jf 6
   (002) ldb      [20]
@@ -32,20 +24,36 @@ tcpdump -d "tcp dst port 80"
   (015) ret      #0
 ```
 
-## cBPF在内核的实现
+> tcpdump的`-d`参数，显示包过滤程序的汇编代码
 
-`SO_ATTACH_FILTER`
+  libpcap中调用`setsockopt`函数，设置`SO_ATTACH_FILTER`，将过滤程序绑定到socket，`setsockopt`原型如下：
 
-## cBPF的JIT及其实现
+```
+  #include <sys/types.h>
+  #incldue <sys/socket.h>
+  int setsockopt(int sockfd, int level, int optname, const void *optval, socklen_t optlen);
+```
+  使用setsockopt()函数的例子，见[sock_attach](code/sock_attach.c)
 
-# eBPF介绍
-  
-  eBPF(extended BPF)是传统BPF的扩展，从Linux-3.15开始支持。
+  `SO_ATTACH_FILTER`的参数为`struct sock_fprog`，定义于`linux/filter.h`，如下：
+```
+  struct sock_filter {
+    __u16 code;
+    __u8 jt;
+    __u8 jf;
+    __u32 k;
+  };
 
-  eBPF是一套内核机制，eBPF程序被注入内核，在特定内核事件发生时执行。
-  
-#### eBPF虚机
-  eBPF虚机是一个RISC CPU，具有11个64-bit Register, 1个PC(Program Counter)和512Byte的Stack。寄存器如下：
+  struct sock_fprog {
+    unsigned short len;
+    struct sock_filter *filter;
+  };
+```
+
+  过滤程序使用BPF虚机指令，结构体`struct sock_filer`就是BPF虚机的指令结构。
+
+#### BPF虚机
+  BPF虚机是一个RISC CPU，具有11个64-bit Register, 1个PC(Program Counter)和512Byte的Stack。寄存器如下：
 
   | 寄存器 | 说明 |
   |--------|------|
