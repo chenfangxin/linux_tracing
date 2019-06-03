@@ -34,6 +34,10 @@ tcpdump -i em1 tcp dst port 80 -d
   #include <sys/types.h>
   #incldue <sys/socket.h>
   int setsockopt(int sockfd, int level, int optname, const void *optval, socklen_t optlen);
+
+  level:
+  optname:
+
 ```
 
   当setsockopt的optname参数指定为`SO_ATTACH_FILTER`时，optval参数类型为结构体`struct sock_fprog`，其成员`filter`指向过滤程序，每个`struct sock_filter`结构体代表一条指令。结构体定义于`linux/filter.h`，如下：

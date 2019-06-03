@@ -6,15 +6,21 @@
 
 #### 使用eBPF
 
-  使用setsockopt的`SO_ATTACH_BPF`选项，用于注入eBPF程序。
+  使用setsockopt的`SO_ATTACH_BPF`选项，用于注入eBPF程序，过程如下:
 
 ```
-    bpf_create_map:
-    bpf_prog_load: 
+    bpf_create_map  ----> sys_bpf(BPF_MAP_CREATE, ...)
+    bpf_prog_load   ----> sys_bpf(BPF_PROG_LOAD, ...)
     sock = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
     bind(sock, ...);
     setsockopt(sock, SOL_SOCKET, SO_ATTACH_BPF, &prog_fd, sizeof(prog_fd));
 ```
+
+  使用的辅助函数如下：
+| 函数原型 | 功能 | 所在文件 |
+|----------|------|----------|
+| `int bpf_create_map(enum bpf_map_type map_type, int key_size, int value_size, int max_entries>, __u32 map_flags) `|   | tools/lib/bpf.c |
+| `int bpf_prog_load(const char *file, enum bpf_prog_type type, struct bpf_object **pobj, int *prog_id) `|   | tools/lib/libbpf.c  |
 
 #### eBPF的内核实现
 
