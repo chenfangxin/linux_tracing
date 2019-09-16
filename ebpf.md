@@ -28,10 +28,6 @@
 
   eBPF的实现是基于系统调用bpf:
 
-```
-
-```
-
 #### eBPF虚机
 
   eBPF虚机是一个RISC CPU，具有11个64-bit Register, 1个PC(Program Counter)和512Byte的Stack。寄存器如下：
@@ -43,4 +39,5 @@
   | r6-r9  |        |
   | r10    | 只读，栈指针(Stack Pointer)    |
 
-
+----
+  ![BPF与EBPF的区别](bpf_and_ebpf.png)
