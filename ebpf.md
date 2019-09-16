@@ -40,4 +40,4 @@
   | r10    | 只读，栈指针(Stack Pointer)    |
 
 ----
-  ![BPF与EBPF的区别](bpf_and_ebpf.png)
+  ![BPF与EBPF的区别](imgs/bpf_and_ebpf.png)
